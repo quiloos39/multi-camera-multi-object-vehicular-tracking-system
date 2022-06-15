@@ -49,20 +49,12 @@ export function Navigation({ children }: NavigationProps) {
   return (
     <div className="inline-flex bg-white">
       <MenuIcons>
-        <CarIcon
-          height={32}
-          width={32}
-          className="cursor-pointer"
-          fill={isCurrentPath("/cars")}
-          onClick={() => navigateTo("/cars")}
-        />
-        <CameraIcon
-          height={32}
-          width={32}
-          className="cursor-pointer"
-          fill={isCurrentPath("/cameras")}
-          onClick={() => navigateTo("/cameras")}
-        />
+        <div onClick={() => navigateTo("/cars")} className="cursor-pointer">
+          <CarIcon height={32} width={32} fill={isCurrentPath("/cars")} />
+        </div>
+        <div className="cursor-pointer" onClick={() => navigateTo("/cameras")}>
+          <CameraIcon height={32} width={32} fill={isCurrentPath("/cameras")} />
+        </div>
       </MenuIcons>
       <NavigationContent toggleMenu={toggleMenu} show={showMenu}>
         {children}
