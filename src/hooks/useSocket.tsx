@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { io } from "socket.io-client";
 import { Camera, CameraResponse, Car, FrameResponse } from "../ts/global";
 import { convertDataURIToBlob, convertJPG } from "../utils/image";
-import { default as jpeg } from "jpeg-js";
 
 export function useSocket({
   host,
