@@ -2,10 +2,12 @@ FROM node:latest
 
 EXPOSE 3000/tcp
 
-WORKDIR /app
+WORKDIR /mcmt
 
-COPY . .
+COPY package.json yarn.lock ./
 
 RUN yarn install
 
-CMD yarn develop
+COPY . .
+
+CMD ["yarn", "develop"]
