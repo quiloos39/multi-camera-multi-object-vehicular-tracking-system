@@ -91,9 +91,8 @@ function FilterCameras({ cameras, selectedCamera, selectCamera }) {
 }
 
 export default function CamerasPage() {
-  const { cameras } = useContext(StateContext);
-  console.log(cameras);
-  // const cameras = CAMERAS;
+  // const { cameras } = useContext(StateContext);
+  const cameras = CAMERAS;
 
   const [selectedCamera, setSelectedCamera] = useState<string>();
 
@@ -119,7 +118,7 @@ export default function CamerasPage() {
         </Link>
       </Navigation>
       <Map>
-        {/* {allCameraMarkers} */}
+        {allCameraMarkers}
         <MapZoomHandler cameras={cameras} selectedCamera={selectedCamera} />
       </Map>
     </Container>
