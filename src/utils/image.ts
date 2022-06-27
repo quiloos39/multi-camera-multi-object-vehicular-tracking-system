@@ -22,3 +22,10 @@ export function convertDataURIToBlob(dataURI) {
   // Create and return a new blob object using binary data
   return new Blob([array], { type: "image/jpg" });
 }
+
+export function convertFrameToImageSource(frame: string) {
+  const imageSource = convertJPG(frame);
+  const imageBlob = convertDataURIToBlob(imageSource);
+  const url = URL.createObjectURL(imageBlob);
+  return url;
+}

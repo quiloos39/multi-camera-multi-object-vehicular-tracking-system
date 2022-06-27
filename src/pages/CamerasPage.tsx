@@ -5,12 +5,51 @@ import { Map } from "../components/Map";
 import CameraIcon from "../assets/camera.svg";
 import { Navigation } from "../components/Navigation";
 import { Title } from "../components/Title";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Input } from "../components/Input";
 import { StateContext } from "../context/StateProvider";
+import { faCameraAlt, faCameraRetro, faCameraRotate, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useCameras } from "../hooks/useCameras";
 
 const ZOOM_LEVEL = 17;
+
+export default function CamerasPage() {
+  const { socket } = useContext(StateContext);
+  const { cameras, loading } = useCameras(socket);
+  const [selectedCamera, setSelectedCamera] = useState<string>();
+
+  function selectCamera(id: string) {
+    if (id === selectedCamera) {
+      setSelectedCamera(undefined);
+    } else {
+      setSelectedCamera(id);
+    }
+  }
+
+  const allCameraMarkers = cameras.map((camera) => (
+    <CameraMarker key={camera.id} camera={camera} selectCamera={selectCamera} />
+  ));
+
+  const loadingOrCameras = loading ? (
+    <p className="mb-5 block animate-bounce">Getting interesting data ...</p>
+  ) : (
+    <FilterCameras selectedCamera={selectedCamera} selectCamera={selectCamera} cameras={cameras} />
+  );
+
+  return (
+    <Container>
+      <Navigation>
+        <Title>Search Camera</Title>
+        {loadingOrCameras}
+      </Navigation>
+      <Map>
+        {allCameraMarkers}
+        <MapZoomHandler cameras={cameras} selectedCamera={selectedCamera} />
+      </Map>
+    </Container>
+  );
+}
 
 function MapZoomHandler({ selectedCamera, cameras }) {
   const map = useMap();
@@ -44,19 +83,6 @@ function CameraMarker({ selectCamera, camera }) {
   );
 }
 
-const CAMERAS = [
-  {
-    id: "c016",
-    lat: 42.4995215,
-    lon: -90.6906985,
-  },
-  {
-    id: "c017",
-    lat: 42.4987505,
-    lon: -90.6906065,
-  },
-];
-
 function FilterCameras({ cameras, selectedCamera, selectCamera }) {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("");
@@ -70,14 +96,14 @@ function FilterCameras({ cameras, selectedCamera, selectCamera }) {
       return (
         <div
           key={camera.id}
-          className={`flex items-end justify-end h-32 ${backgroundColor} cursor-pointer mb-5`}
+          className={`items-end justify-end bg-gray-200 p-4 ${backgroundColor} mb-5 cursor-pointer`}
           onClick={() => selectCamera(camera.id)}
           onDoubleClick={() => navigate(`/cameras/${camera.id}`)}
         >
-          <div className="px-5 bg-black text-white">
-            {camera.thumbnail}
-            <p>{camera.id}</p>
-          </div>
+          <div className="mb-2 h-60">{camera.thumbnail}</div>
+          <p>
+            <span className="font-bold">ID:</span> {camera.id}
+          </p>
         </div>
       );
     });
@@ -87,40 +113,5 @@ function FilterCameras({ cameras, selectedCamera, selectCamera }) {
       <Input onChange={(e) => setFilter(e.target["value"])} placeholder="Type to search camera" />
       {allCameras}
     </div>
-  );
-}
-
-export default function CamerasPage() {
-  // const { cameras } = useContext(StateContext);
-  const cameras = CAMERAS;
-
-  const [selectedCamera, setSelectedCamera] = useState<string>();
-
-  function selectCamera(id: string) {
-    if (id === selectedCamera) {
-      setSelectedCamera(undefined);
-    } else {
-      setSelectedCamera(id);
-    }
-  }
-
-  const allCameraMarkers = cameras.map((camera) => (
-    <CameraMarker key={camera.id} camera={camera} selectCamera={selectCamera} />
-  ));
-
-  return (
-    <Container>
-      <Navigation>
-        <Title>Search Camera</Title>
-        <FilterCameras selectedCamera={selectedCamera} selectCamera={selectCamera} cameras={cameras} />
-        <Link to="/cameras" className="text-[#005F95] underline font-bold">
-          Show all cameras
-        </Link>
-      </Navigation>
-      <Map>
-        {allCameraMarkers}
-        <MapZoomHandler cameras={cameras} selectedCamera={selectedCamera} />
-      </Map>
-    </Container>
   );
 }

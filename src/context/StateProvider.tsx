@@ -3,28 +3,6 @@ import { useSocket } from "../hooks/useSocket";
 import { Camera, Car, Frame, InitialStateType } from "../ts/global";
 import { mainReducer } from "./mainReducer";
 
-class ObjectSet {
-  data: any[];
-  iterator: number;
-
-  constructor() {
-    this.data = [];
-    this.iterator = 0;
-  }
-  add(item: any) {
-    const found = this.data.find((elem) => elem.id === item.id);
-    if (!found) {
-      this.data.push(item);
-    }
-    return this.data;
-  }
-  get() {
-    if (this.iterator < this.data.length) {
-      return this.data[this.iterator++];
-    }
-  }
-}
-
 const initalState: InitialStateType = {
   loading: false,
   connected: false,
@@ -43,8 +21,8 @@ interface StateProviderProps {
 export const StateContext = createContext<any>(undefined);
 
 export function StateProvider({ children }: StateProviderProps) {
-  useSocket({
-    host: "localhost",
+  const socket = useSocket({
+    host: "192.168.42.3",
     port: "4920",
     events: {
       onConnect,
@@ -117,7 +95,7 @@ export function StateProvider({ children }: StateProviderProps) {
   }
 
   return (
-    <StateContext.Provider value={{ state: { state, dispatch }, bufferRef, cameras, cars }}>
+    <StateContext.Provider value={{ state: { state, dispatch }, bufferRef, cameras, cars, socket }}>
       {children}
     </StateContext.Provider>
   );
