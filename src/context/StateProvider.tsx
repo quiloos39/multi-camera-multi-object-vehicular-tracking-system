@@ -1,9 +1,10 @@
-import React, { createContext, useReducer, useRef, useState } from "react";
-import { useSocket } from "../hooks/useSocket";
-import { Camera, Car, Frame, InitialStateType } from "../ts/global";
+import React, { createContext, useEffect, useReducer, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
+import { Loading } from "../components/Loading";
+import { InitialStateType } from "../ts/global";
 import { mainReducer } from "./mainReducer";
 
-const initalState: InitialStateType = {
+const initialState: InitialStateType = {
   loading: false,
   connected: false,
   error: false,
@@ -14,89 +15,36 @@ const initalState: InitialStateType = {
   },
 };
 
+const HOST = "localhost";
+const PORT = "4920";
+
+export const StateContext = createContext<any>(undefined);
+
 interface StateProviderProps {
   children: React.ReactNode;
 }
 
-export const StateContext = createContext<any>(undefined);
-
 export function StateProvider({ children }: StateProviderProps) {
-  const socket = useSocket({
-    host: "192.168.42.3",
-    port: "4920",
-    events: {
-      onConnect,
-      onConnectionLost,
-      onFrameReceived,
-      onCameraUpdate,
-      onCarUpdate,
-    },
-  });
+  const [state, dispatch] = useReducer(mainReducer, initialState);
+  const [socket, setSocket] = useState<Socket>();
 
-  const [state, dispatch] = useReducer(mainReducer, initalState);
-  const bufferRef = useRef<any>({});
-  const [cameras, setCameras] = useState<Camera[]>([]);
-  const [cars, setCars] = useState<any>([]);
-
-  function onConnect() {}
-
-  function onConnectionLost() {}
-
-  function onFrameReceived(cameraId, newFrame: Frame) {
-    if (!bufferRef.current[cameraId]) {
-      bufferRef.current[cameraId] = [];
-    }
-
-    if (bufferRef.current[cameraId].length > 24 * 5) {
-      bufferRef.current[cameraId] = [];
-    }
-
-    bufferRef.current[cameraId].push(newFrame);
-  }
-
-  function onCameraUpdate(newCameras: Camera[]) {
-    let shouldUpdate = false;
-    for (const camera of cameras) {
-      if (!camera.thumbnail) {
-        shouldUpdate = true;
-      }
-    }
-    if (shouldUpdate || cameras.length === 0) {
-      setCameras((oldCamera) => {
-        return newCameras.map((newCamera) => {
-          const found = oldCamera.find((oldCar) => oldCar.id === newCamera.id);
-          if (found) {
-            return {
-              ...newCamera,
-              thumbnail: found.thumbnail,
-            };
-          } else {
-            return newCamera;
-          }
-        });
-      });
-    }
-  }
-
-  function onCarUpdate(newCars: Car[]) {
-    setCars((oldCars) => {
-      return newCars.map((newCar) => {
-        const found = oldCars.find((oldCar) => oldCar.id === newCar.id);
-        if (found) {
-          return {
-            ...newCar,
-            thumbnail: found.thumbnail,
-          };
-        } else {
-          return newCar;
-        }
-      });
+  useEffect(() => {
+    const socket = io(`${HOST}:${PORT}`);
+    setSocket(socket);
+    socket.on("connect", () => {
+      setTimeout(() => {
+        dispatch({ type: "socket/connected" });
+      }, 1500);
     });
-  }
 
-  return (
-    <StateContext.Provider value={{ state: { state, dispatch }, bufferRef, cameras, cars, socket }}>
-      {children}
-    </StateContext.Provider>
-  );
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  if (!state.connected) {
+    return <Loading />;
+  } else {
+    return <StateContext.Provider value={{ state, dispatch, socket }}>{children}</StateContext.Provider>;
+  }
 }

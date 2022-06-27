@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
-import "leaflet/dist/leaflet.css";
-import "./styles/global.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
+
+import { StateProvider } from "./context/StateProvider";
 import CameraPage from "./pages/CameraPage";
 import CamerasPage from "./pages/CamerasPage";
 import ErrorPage from "./pages/ErrorPage";
 import CarsPage from "./pages/CarsPage";
-import { StateProvider } from "./context/StateProvider";
+import "./styles/global.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
@@ -16,12 +17,13 @@ root.render(
   <StateProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="" element={<Navigate to="/cameras" replace />} />
+        <Route path="/" element={<Navigate to="/cameras" replace />} />
+        <Route path="/cars" element={<CarsPage />} />
         <Route path="cameras">
           <Route index element={<CamerasPage />} />
           <Route path=":id" element={<CameraPage />} />
         </Route>
-        <Route path="/cars" element={<CarsPage />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   </StateProvider>

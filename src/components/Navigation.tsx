@@ -1,16 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon, FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCarSide, faVideo } from "@fortawesome/free-solid-svg-icons";
+import { StateContext } from "../context/StateProvider";
 
 export function Navigation({ children }: NavigationProps) {
-  const [collapse, setCollapse] = useState<boolean>(true);
-  const toggleCollapse = () => setCollapse(!collapse);
+  const { state, dispatch } = useContext(StateContext);
+
+  function toggle() {
+    dispatch({ type: "menu/toggle" });
+  }
 
   return (
     <div className="flex">
-      <Menu toggleCollapse={toggleCollapse} />
-      <NavigationContent collapse={collapse} toggleCollapse={toggleCollapse}>
+      <Menu toggleCollapse={toggle} />
+      <NavigationContent collapse={!state.showMenu} toggle={toggle}>
         {children}
       </NavigationContent>
     </div>
@@ -68,12 +72,12 @@ function Menu({ toggleCollapse }: MenuProps) {
 }
 
 interface NavigationContentProps {
-  toggleCollapse?: () => void;
+  toggle?: () => void;
   collapse?: boolean;
   children?: React.ReactNode;
 }
 
-export function NavigationContent({ collapse = true, toggleCollapse, children }: NavigationContentProps) {
+export function NavigationContent({ collapse = true, toggle, children }: NavigationContentProps) {
   const width = collapse ? "w-0" : "w-[520px]";
   const rotate = collapse ? "rotate-180" : "";
 
@@ -82,7 +86,7 @@ export function NavigationContent({ collapse = true, toggleCollapse, children }:
       <div className={`h-full ${width} overflow-y-scroll bg-white transition-[width] duration-500`}>
         <div className="overflow-x-hidden whitespace-nowrap p-10">{children}</div>
       </div>
-      <div className="absolute top-1/2 bottom-1/2 -right-6 z-[9999]" onClick={toggleCollapse}>
+      <div className="absolute top-1/2 bottom-1/2 -right-6 z-[9999]" onClick={toggle}>
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
           <FontAwesomeIcon icon={faArrowLeft} className={`transition-transform ${rotate} duration-700`} />
         </div>

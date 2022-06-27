@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import { StateContext } from "../context/StateProvider";
 
@@ -6,21 +6,8 @@ export interface MapProps {
   children?: React.ReactNode;
 }
 
-function MapPositionHandler({ updateMap }) {
-  const map = useMapEvents({
-    move: () => {
-      const zoom = map.getZoom();
-      const center = map.getCenter();
-      updateMap([center.lat, center.lng], zoom);
-    },
-  });
-  return null;
-}
-
 export function Map({ children }: MapProps) {
-  const {
-    state: { state, dispatch },
-  } = useContext(StateContext);
+  const { state, dispatch } = useContext(StateContext);
   const map = state.map;
 
   function updateMap(center, zoom) {
@@ -37,4 +24,15 @@ export function Map({ children }: MapProps) {
       <MapPositionHandler updateMap={updateMap} />
     </MapContainer>
   );
+}
+
+function MapPositionHandler({ updateMap }) {
+  const map = useMapEvents({
+    move: () => {
+      const zoom = map.getZoom();
+      const center = map.getCenter();
+      updateMap([center.lat, center.lng], zoom);
+    },
+  });
+  return null;
 }

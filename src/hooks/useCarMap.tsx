@@ -32,7 +32,7 @@ export function useCarMap(socket: Socket) {
     return () => {
       clearInterval(timerRef.current);
     };
-  }, []);
+  }, [socket]);
 
   return { cars };
 }

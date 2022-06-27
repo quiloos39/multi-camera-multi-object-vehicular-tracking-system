@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { convertFrameToImageSource } from "../utils/image";
 import { Socket } from "socket.io-client";
 
+/**
+ * Used for fetching cameras metadata from the server.
+ * @param socket
+ * @returns
+ */
 export function useCameras(socket: Socket) {
   const [cameras, setCameras] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -23,15 +28,7 @@ export function useCameras(socket: Socket) {
               lat: value.lat,
               lon: value.lon,
               thumbnail: (
-                <img
-                  src={convertFrameToImageSource(value.thumbnail)}
-                  alt=""
-                  style={{
-                    objectFit: "cover",
-                    width: "100%",
-                    height: "100%",
-                  }}
-                />
+                <img src={convertFrameToImageSource(value.thumbnail)} alt="" className="h-full w-full object-cover" />
               ),
             }))
           );

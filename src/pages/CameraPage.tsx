@@ -1,14 +1,12 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Container } from "../components/Container";
 import { Player } from "../components/Player";
 import { StateContext } from "../context/StateProvider";
-import { Frame } from "../ts/global";
-import Back from "../assets/ant-design_double-right-outlined.svg";
-import { Input } from "../components/Input";
-import { Socket } from "socket.io-client";
-import { convertFrameToImageSource } from "../utils/image";
 import { NavigationContent } from "../components/Navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { useFrame } from "../hooks/useFrame";
 
 export default function CameraPage() {
   const { socket } = useContext(StateContext);
@@ -35,16 +33,9 @@ export default function CameraPage() {
 
   return (
     <Container>
-      <NavigationContent collapse={collapse} toggleCollapse={() => setCollapse(!collapse)}>
+      <NavigationContent collapse={collapse} toggle={() => setCollapse(!collapse)}>
         <div className="mb-5 flex items-center space-x-5">
-          <img
-            src={Back}
-            alt=""
-            width={18}
-            height={18}
-            className="relative top-1 cursor-pointer"
-            onClick={() => navigate("/cameras")}
-          />
+          <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate("/cameras")} className="cursor-pointer" />
           <h1 className="text-4xl">{id}</h1>
         </div>
         {allCars}
@@ -52,54 +43,4 @@ export default function CameraPage() {
       <Player frame={frame} />
     </Container>
   );
-}
-
-const FRAME_INTERVAL = 100;
-
-function useFrame(socket: Socket, id: string) {
-  const [frame, setFrame] = useState<any>();
-  const [cars, setCars] = useState<any[]>([]);
-
-  useEffect(() => {
-    async function fetchFrames() {
-      if (socket) {
-        const response: any = await new Promise((resolve) => {
-          socket.emit("give_stream_data", id, (response) => {
-            resolve(response);
-          });
-        });
-
-        setCars(
-          response.cars.map((car) => ({
-            thumbnail: <img src={convertFrameToImageSource(car.thumbnail)} className="h-full w-full object-cover" />,
-            id: car.id,
-            label: car.label,
-          }))
-        );
-
-        const boundingBoxes = response.cars.map((car) => ({
-          id: car.id,
-          label: car.label.toString(),
-          x: car.box[0],
-          y: car.box[1],
-          w: car.box[2] - car.box[0],
-          h: car.box[3] - car.box[1],
-          color: car.color,
-        }));
-
-        const image = new Image();
-        image.src = convertFrameToImageSource(response.frame);
-        image.onload = () => {
-          setFrame({
-            image,
-            boundingBoxes,
-          });
-          fetchFrames();
-        };
-      }
-    }
-    fetchFrames();
-  }, [id, socket]);
-
-  return { frame, cars };
 }

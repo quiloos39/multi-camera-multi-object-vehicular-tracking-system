@@ -7,7 +7,7 @@ import { StateContext } from "../context/StateProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { Marker } from "react-leaflet";
+import { Marker, Popup } from "react-leaflet";
 import CircleSolid from "../assets/circle-solid.svg";
 import L from "leaflet";
 import { useCarMap } from "../hooks/useCarMap";
@@ -15,6 +15,7 @@ import { useQuery } from "../hooks/useQuery";
 
 export default function CarsPage() {
   const { socket } = useContext(StateContext);
+
   const { onQuery, cars: queryResult, loading: queryLoading } = useQuery(socket);
   const { cars: carPoints } = useCarMap(socket);
 
@@ -50,7 +51,9 @@ export default function CarsPage() {
   });
 
   const allCarMarkers = carPoints.map((car) => (
-    <Marker key={car.car_id} icon={carIcon} position={[car.lat, car.lon]} />
+    <Marker key={car.car_id} icon={carIcon} position={[car.lat, car.lon]}>
+      <Popup>{car.car_id}</Popup>
+    </Marker>
   ));
 
   return (

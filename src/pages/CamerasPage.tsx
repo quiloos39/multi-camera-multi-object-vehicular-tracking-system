@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Input } from "../components/Input";
 import { StateContext } from "../context/StateProvider";
-import { faCameraAlt, faCameraRetro, faCameraRotate, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useCameras } from "../hooks/useCameras";
 
 const ZOOM_LEVEL = 17;
