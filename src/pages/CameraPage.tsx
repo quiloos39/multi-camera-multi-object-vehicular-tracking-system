@@ -35,7 +35,7 @@ export default function CameraPage() {
     <Container>
       <NavigationContent collapse={collapse} toggle={() => setCollapse(!collapse)}>
         <div className="mb-5 flex items-center space-x-5">
-          <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate("/cameras")} className="cursor-pointer" />
+          <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate(-1)} className="cursor-pointer" />
           <h1 className="text-4xl">{id}</h1>
         </div>
         {allCars}

@@ -2,13 +2,13 @@ import { Container } from "../components/Container";
 import { Map } from "../components/Map";
 import { Navigation } from "../components/Navigation";
 import { Title } from "../components/Title";
-import { useContext, useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import { StateContext } from "../context/StateProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { Marker, Popup } from "react-leaflet";
-import CircleSolid from "../assets/circle-solid.svg";
+import { Marker, Tooltip, useMap } from "react-leaflet";
+import Car from "../assets/car.svg";
 import L from "leaflet";
 import { useCarMap } from "../hooks/useCarMap";
 import { useQuery } from "../hooks/useQuery";
@@ -44,17 +44,7 @@ export default function CarsPage() {
     </div>
   );
 
-  const carIcon = new L.Icon({
-    iconUrl: CircleSolid,
-    iconRetinaUrl: CircleSolid,
-    iconSize: [20, 20],
-  });
-
-  const allCarMarkers = carPoints.map((car) => (
-    <Marker key={car.car_id} icon={carIcon} position={[car.lat, car.lon]}>
-      <Popup>{car.car_id}</Popup>
-    </Marker>
-  ));
+  const allCarMarkers = carPoints.map((car) => <CarMarker key={car.car_id} car={car} />);
 
   return (
     <Container>
@@ -65,6 +55,37 @@ export default function CarsPage() {
       </Navigation>
       <Map>{allCarMarkers}</Map>
     </Container>
+  );
+}
+
+function CarMarker({ car }) {
+  const navigate = useNavigate();
+  const carIcon = new L.Icon({
+    iconUrl: Car,
+    iconRetinaUrl: Car,
+    iconSize: [60, 60],
+  });
+
+  const map = useMap();
+
+  function onClick(e) {
+    map.flyTo(e.latlng, 18);
+  }
+
+  return (
+    <Marker
+      key={car.car_id}
+      icon={carIcon}
+      position={[car.lat, car.lon]}
+      eventHandlers={{
+        dblclick: () => navigate(`/cameras/${car.cam_id}`),
+        click: (e) => onClick(e),
+      }}
+    >
+      <Tooltip permanent direction="bottom">
+        {car.car_id}
+      </Tooltip>
+    </Marker>
   );
 }
 
