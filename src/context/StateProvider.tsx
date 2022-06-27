@@ -5,7 +5,7 @@ import { InitialStateType } from "../ts/global";
 import { mainReducer } from "./mainReducer";
 
 const initialState: InitialStateType = {
-  loading: false,
+  loading: true,
   connected: false,
   error: false,
   showMenu: true,
@@ -42,7 +42,7 @@ export function StateProvider({ children }: StateProviderProps) {
     };
   }, []);
 
-  if (!state.connected) {
+  if (state.loading) {
     return <Loading />;
   } else {
     return <StateContext.Provider value={{ state, dispatch, socket }}>{children}</StateContext.Provider>;

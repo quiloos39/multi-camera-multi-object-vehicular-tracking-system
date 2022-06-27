@@ -21,15 +21,15 @@ export default function CarsPage() {
 
   const navigate = useNavigate();
 
-  const allCarPoints = (
+  const allCars = (
     <div className="space-y-5">
       {queryResult.map((car) => (
         <div
           key={car.id}
           onClick={() => navigate(`/cameras/${car.cameraId}`)}
-          className="cursor-pointer bg-gray-200 p-4"
+          className="cursor-pointer rounded-lg bg-gray-200 p-4 hover:bg-gray-400"
         >
-          <div className="h-48 w-full">{car.thumbnail}</div>
+          <div className="mb-2 h-48 w-full">{car.thumbnail}</div>
           <p>
             <span className="font-bold">ID:</span> {car.id}
           </p>
@@ -51,7 +51,7 @@ export default function CarsPage() {
       <Navigation>
         <Title>Search Car</Title>
         <Search loading={queryLoading} onQuery={onQuery} />
-        <div>{queryResult.length > 0 ? allCarPoints : <p>No results</p>}</div>
+        {allCars}
       </Navigation>
       <Map>{allCarMarkers}</Map>
     </Container>
@@ -107,13 +107,15 @@ function Search({ loading, onQuery }: SearchProps) {
   );
 
   return (
-    <div className="mb-5 flex border bg-gray-200 py-2 px-5">
+    <div className="mb-5 flex rounded-lg border bg-gray-200 py-2 px-5">
       <input
         ref={inputRef}
         className="w-full bg-transparent outline-none"
         onKeyDown={(e) => {
           if (e.key === "Enter" && !loading) {
             onQuery(e.currentTarget.value);
+          } else if (e.key === "Escape") {
+            e.currentTarget.value = "";
           }
         }}
         placeholder="Search for blue car"

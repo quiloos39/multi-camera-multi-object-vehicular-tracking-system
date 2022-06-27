@@ -15,7 +15,7 @@ export function Loading() {
   }, [dots]);
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center">
+    <div className="flex h-screen flex-col items-center justify-center">
       <img src={Eye} width={100} height={100} alt="" className="mb-5" />
       <p className="font-bold">Attempting to connect {".".repeat(dots)}</p>
     </div>

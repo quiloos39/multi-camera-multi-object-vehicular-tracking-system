@@ -8,6 +8,7 @@ export function useFrame(socket: Socket, id: string) {
 
   useEffect(() => {
     async function fetchFrames() {
+      console.log(id);
       if (socket) {
         const response: any = await new Promise((resolve) => {
           socket.emit("give_stream_data", id, (response) => {
@@ -15,15 +16,17 @@ export function useFrame(socket: Socket, id: string) {
           });
         });
 
-        setCars(
-          response.cars.map((car) => ({
-            thumbnail: (
-              <img alt="" src={convertFrameToImageSource(car.thumbnail)} className="h-full w-full object-cover" />
-            ),
-            id: car.id,
-            label: car.label,
-          }))
-        );
+        if (response.cars.length > 0) {
+          setCars(
+            response.cars.map((car) => ({
+              thumbnail: (
+                <img alt="" src={convertFrameToImageSource(car.thumbnail)} className="h-full w-full object-cover" />
+              ),
+              id: car.id,
+              label: car.label,
+            }))
+          );
+        }
 
         const boundingBoxes = response.cars.map((car) => ({
           id: car.id,
@@ -42,12 +45,11 @@ export function useFrame(socket: Socket, id: string) {
             image,
             boundingBoxes,
           });
-          fetchFrames();
         };
       }
     }
     fetchFrames();
-  }, [id, socket]);
+  }, [id, socket, frame]);
 
   return { frame, cars };
 }

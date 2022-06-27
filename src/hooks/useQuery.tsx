@@ -33,7 +33,7 @@ export function useQuery(socket: Socket) {
         response.map((car) => ({
           id: car.id,
           cameraId: car.camera,
-          thumbnail: <img src={convertFrameToImageSource(car.frame)} alt="" className="h-full w-full object-fill" />,
+          thumbnail: <img src={convertFrameToImageSource(car.frame)} alt="" className="h-full w-full object-cover" />,
           score: car.score,
         }))
       );

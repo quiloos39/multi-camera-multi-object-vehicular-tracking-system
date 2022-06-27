@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Container } from "../components/Container";
 import { Player } from "../components/Player";
 import { StateContext } from "../context/StateProvider";
-import { NavigationContent } from "../components/Navigation";
+import { NavigationContent } from "../components/NavigationContent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useFrame } from "../hooks/useFrame";
@@ -20,9 +20,12 @@ export default function CameraPage() {
     <div className="space-y-5">
       {filteredCars.length > 0 ? (
         filteredCars.map((car) => (
-          <div key={car.id} className="bg-gray-200 p-4 ">
-            <div className="h-44 w-full">{car.thumbnail}</div>
-            <p className="font-bold">ID: {car.id}</p>
+          <div key={car.id} className="rounded-lg bg-gray-200 p-4 hover:bg-gray-400">
+            <div className="mb-2 h-44 w-full">{car.thumbnail}</div>
+            <p>
+              <span className="font-bold">ID: </span>
+              {car.id}
+            </p>
           </div>
         ))
       ) : (
@@ -33,10 +36,11 @@ export default function CameraPage() {
 
   return (
     <Container>
+      <div className="w-5 bg-white"></div>
       <NavigationContent collapse={collapse} toggle={() => setCollapse(!collapse)}>
         <div className="mb-5 flex items-center space-x-5">
           <FontAwesomeIcon icon={faArrowLeft} onClick={() => navigate(-1)} className="cursor-pointer" />
-          <h1 className="text-4xl">{id}</h1>
+          <h1 className="text-4xl font-semibold">{id}</h1>
         </div>
         {allCars}
       </NavigationContent>
